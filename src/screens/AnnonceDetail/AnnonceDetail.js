@@ -1,15 +1,20 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 
-const AnnonceDetail = ({ route}) => {
+const AnnonceDetail = ({ route }) => {
   const { item } = route.params;
+  const formattedDate = new Date(item.timestamp.seconds * 1000).toLocaleDateString();
+
   return (
     <View style={styles.container}>
-      <Image source={{ uri: item.imageUrl }} style={styles.image} />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.date}>{item.date}</Text>
-      <Text style={styles.department}>{item.department}</Text>
-      <Text style={styles.description}>{item.description}</Text>
+      {
+        item.fileURL&&(<Image source={{ uri: item.fileURL }} style={styles.image} />)
+      }
+      
+      <Text style={styles.title}>{item.subject}</Text>
+      <Text style={styles.date}>{formattedDate}</Text>
+      <Text style={styles.description}>{item.body}</Text>
+      <Text style={styles.sender}>Envoyé par: {JSON.parse(item.sender).name}, {JSON.parse(item.sender).status}, Matricule: {JSON.parse(item.sender).matricule}, Promotion: {JSON.parse(item.sender).promotion}</Text>
     </View>
   );
 };
@@ -47,6 +52,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#444',
     lineHeight: 22,
+  },
+  sender: {
+    fontSize: 14,
+    color: '#555',
+    marginTop: 20,
   },
 });
 

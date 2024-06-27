@@ -4,15 +4,15 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet,Picker,Alert} from 'react-native';
 import { PRIMARYCOLOR } from '../../../assets/Constant/COLOR';
 import {db, storage} from "../../../.firebase/firebaseConf.js"
-import { doc, setDoc } from "firebase/firestore"; 
+import { collection, addDoc } from "firebase/firestore"; 
 import { ref, uploadBytes } from 'firebase/storage';
 
 
 const ComposeEmailScreen = ({ navigation }) => {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
- const [department, setDepartment] = useState('');
-  const [promotion, setPromotion] = useState('');
+ const [department, setDepartment] = useState('all_departments');
+  const [promotion, setPromotion] = useState('all_promotions');
   const [senderName, setSenderName] = useState('');
   const [messageTitle, setMessageTitle] = useState('');
   const [message, setMessage] = useState('');
@@ -27,14 +27,10 @@ const ComposeEmailScreen = ({ navigation }) => {
         const fileBlob = await response.blob();
         const refdoc = ref(storage, `annonces/${file.assets[0].name}`);
         uploadBytes(refdoc, fileBlob).then((snapshot) => {
-            // fileURL =  snapshot.getDownloadURL();
-            console.log(snapshot)
-
+            fileURL =  snapshot.metadata.name
 });
       }
-
-
-      await setDoc(doc(db, "annonces",`${new Date()}${user["matricule"]}`), {
+      const docRef = await addDoc(collection(db, "annonces"),{
         promotion:promotion,
         department:department,
         subject: subject,
@@ -83,9 +79,9 @@ const ComposeEmailScreen = ({ navigation }) => {
           <Picker.Item label="Choisir un département" value="" />
           <Picker.Item label="Tous les départements" value="all_departments" />
           <Picker.Item label="Sciences informatiques" value="computer_science" />
-          <Picker.Item label="Genie et gestion de télécommunication" value="telecom_management" />
+          <Picker.Item label="Genie et gestion de télécommunication" value="telecom" />
           <Picker.Item label="Finance et Banque" value="finance_banking" />
-          <Picker.Item label="Medecine et soin de santé" value="medicine_healthcare" />
+          <Picker.Item label="Medecine et soin de santé" value="medicine" />
         </Picker>
 
         <Picker
@@ -151,8 +147,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlignVertical: 'top',
     padding: 8,
-    backgroundColor:"#ccc",
-    height:'100vh'
   },
   pickerContainer: {
     flexDirection: 'column',
